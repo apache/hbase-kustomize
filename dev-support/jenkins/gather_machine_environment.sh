@@ -16,6 +16,8 @@
 # specific language governing permissions and limitations
 # under the License.
 
+# SHELLDOC-IGNORE
+
 set -e
 function usage {
   echo "Usage: ${0} /path/for/output/dir"

@@ -19,6 +19,8 @@
 # details. Be careful when changing the contents of this file since it may affect many developers
 # of the project and make sure to discuss the changes with dev@ before committing.
 
+# yamllint disable rule:document-start
+
 github:
   description: "Apache HBase deployments on Kubernetes using Kustomize"
   homepage: https://hbase.apache.org/
@@ -32,11 +34,11 @@ github:
     issues: false
     projects: false
   enabled_merge_buttons:
-    squash:  true
-    merge:   false
-    rebase:  true
+    squash: true
+    merge: false
+    rebase: true
 notifications:
-  commits:      commits@hbase.apache.org
-  issues:       issues@hbase.apache.org
+  commits: commits@hbase.apache.org
+  issues: issues@hbase.apache.org
   pullrequests: issues@hbase.apache.org
   jira_options: link

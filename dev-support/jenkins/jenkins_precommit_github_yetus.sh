@@ -16,6 +16,8 @@
 # specific language governing permissions and limitations
 # under the License.
 
+# SHELLDOC-IGNORE
+
 set -e
 
 # place ourselves in the directory containing the hbase and yetus checkouts
@@ -110,8 +112,6 @@ YETUS_ARGS+=("--tests-filter=test4tests")
 YETUS_ARGS+=("--docker")
 # our jenkins workers don't have buildkit installed (INFRA-24704)
 YETUS_ARGS+=('--docker-buildkit=false')
-# effectively treat dev-support as a custom maven module
-YETUS_ARGS+=("--skip-dirs=dev-support")
 # help keep the ASF boxes clean
 YETUS_ARGS+=("--sentinel")
 YETUS_ARGS+=("--github-token=${GITHUB_TOKEN}")
