@@ -32,9 +32,7 @@ declare -a required_envs=(
   # these ENV variables define the required API with Jenkinsfile_GitHub
   "ARCHIVE_PATTERN_LIST"
   "BUILD_URL_ARTIFACTS"
-  "DOCKERFILE"
-  "GITHUB_PASSWORD"
-  "GITHUB_USER"
+  "GITHUB_TOKEN"
   "PATCHDIR"
   "PLUGINS"
   "SOURCEDIR"
@@ -81,6 +79,7 @@ fi
 if [ -n "${JAVA_HOME}" ]; then
   unset JAVA_HOME
 fi
+YETUS_ARGS+=('--project=hbase-kustomize')
 YETUS_ARGS+=("--patch-dir=${PATCHDIR}")
 # where the source is located
 YETUS_ARGS+=("--basedir=${SOURCEDIR}")
@@ -88,9 +87,10 @@ YETUS_ARGS+=("--basedir=${SOURCEDIR}")
 YETUS_ARGS+=("--brief-report-file=${PATCHDIR}/brief.txt")
 YETUS_ARGS+=("--console-report-file=${PATCHDIR}/console.txt")
 YETUS_ARGS+=("--html-report-file=${PATCHDIR}/report.html")
-# enable writing back to Github
-YETUS_ARGS+=("--github-password=${GITHUB_PASSWORD}")
-YETUS_ARGS+=("--github-user=${GITHUB_USER}")
+# don't complain about issues on source branch
+YETUS_ARGS+=('--continuous-improvement=true')
+# don't worry about unrecognized options
+YETUS_ARGS+=('--ignore-unknown-options=true')
 # auto-kill any surefire stragglers during unit test runs
 YETUS_ARGS+=("--reapermode=kill")
 # set relatively high limits for ASF machines
@@ -106,17 +106,20 @@ YETUS_ARGS+=("--build-url-artifacts=${BUILD_URL_ARTIFACTS}")
 # plugins to enable
 YETUS_ARGS+=("--plugins=${PLUGINS}")
 YETUS_ARGS+=("--tests-filter=test4tests")
-# run in docker mode and specifically point to our
-# Dockerfile since we don't want to use the auto-pulled version.
+# run in docker mode
 YETUS_ARGS+=("--docker")
-YETUS_ARGS+=("--dockerfile=${DOCKERFILE}")
+# our jenkins workers don't have buildkit installed (INFRA-24704)
+YETUS_ARGS+=('--docker-buildkit=false')
 # effectively treat dev-support as a custom maven module
 YETUS_ARGS+=("--skip-dirs=dev-support")
 # help keep the ASF boxes clean
 YETUS_ARGS+=("--sentinel")
+YETUS_ARGS+=("--github-token=${GITHUB_TOKEN}")
 # use emoji vote so it is easier to find the broken line
 YETUS_ARGS+=("--github-use-emoji-vote")
 YETUS_ARGS+=("--github-repo=apache/hbase-kustomize")
+# enable writing back to Github
+YETUS_ARGS+=('--github-write-comment')
 # increasing proc limit to avoid OOME: unable to create native threads
 YETUS_ARGS+=("--proclimit=5000")
 
