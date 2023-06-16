@@ -36,7 +36,6 @@ pipeline {
         YETUS_REL = 'yetus'
         // Branch or tag name.  Yetus release tags are 'rel/X.Y.Z'
         YETUS_VERSION = 'rel/0.14.1'
-        DOCKERFILE_REL = "${SRC_REL}/dev-support/jenkins/Dockerfile"
         YETUS_DRIVER_REL = "${SRC_REL}/dev-support/jenkins/jenkins_precommit_github_yetus.sh"
         ARCHIVE_PATTERN_LIST = 'TEST-*.xml'
         BUILD_URL_ARTIFACTS = "artifact/${WORKDIR_REL}/${PATCH_REL}"
@@ -44,7 +43,6 @@ pipeline {
         WORKDIR = "${WORKSPACE}/${WORKDIR_REL}"
         SOURCEDIR = "${WORKDIR}/${SRC_REL}"
         PATCHDIR = "${WORKDIR}/${PATCH_REL}"
-        DOCKERFILE = "${WORKDIR}/${DOCKERFILE_REL}"
         YETUS_DRIVER = "${WORKDIR}/${YETUS_DRIVER_REL}"
         YETUSDIR = "${WORKDIR}/${YETUS_REL}"
         PLUGINS = 'all'
@@ -73,7 +71,7 @@ pipeline {
                     withCredentials([
                       usernamePassword(
                         credentialsId: 'apache-hbase-at-github.com',
-                        passwordVariable: 'GITHUB_PASSWORD',
+                        passwordVariable: 'GITHUB_TOKEN',
                         usernameVariable: 'GITHUB_USER'
                       )]) {
                         sh label: 'test-patch', script: '''#!/bin/bash -e
