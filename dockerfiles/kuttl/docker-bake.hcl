@@ -14,8 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# A convenience script for build the kuttl image.
-# See hbase-kubernetes-deployment/dockerfiles/kuttl/README.md
+# A convenience script to build the kuttl image. See ./README.md
 #
 
 # input variables
@@ -45,18 +44,22 @@ variable KUSTOMIZE_BIN_ARM64_TGZ_URL {}
 variable KUSTOMIZE_BIN_ARM64_TGZ {}
 
 # output variables
-variable USER {
-  default = "apache"
+variable USER {}
+variable IMAGE_NAME_REPOSITORY {
+  default = ""
 }
-variable IMAGE_TAG {
+variable IMAGE_NAME_LABEL {
+  default = "${USER}/hbase/kustomize/kuttl"
+}
+variable IMAGE_NAME_TAG {
   default = "latest"
 }
-variable IMAGE_NAME {
-  default = "${USER}/hbase/kustomize/kuttl"
+variable IMAGE_TAG {
+  default = "${regex_replace("${IMAGE_NAME_REPOSITORY}/${IMAGE_NAME_LABEL}:${IMAGE_NAME_TAG}", "^/+", "")}"
 }
 
 group default {
-  targets = [ "kuttl" ]
+  targets = [ "kuttl", "kuttl-test" ]
 }
 
 target kuttl {
@@ -84,9 +87,12 @@ target kuttl {
     KUSTOMIZE_BIN_ARM64_TGZ = KUSTOMIZE_BIN_ARM64_TGZ
   }
   target = "final"
-  platforms = [
-    "linux/amd64",
-    "linux/arm64"
-  ]
-  tags = [ "${IMAGE_NAME}:${IMAGE_TAG}" ]
+  platforms = [ "linux/amd64" ]
+  tags = [ "${IMAGE_TAG}" ]
+}
+
+target kuttl-test {
+  inherits = [ "kuttl" ]
+  target = "test"
+  tags = []
 }
