@@ -42,8 +42,8 @@ Finally, build the image using:
 
 ```shell
 docker buildx bake \
-  --file src/main/docker/docker-bake.hcl \
-  --file src/main/docker/docker-bake.override.hcl \
+  --file dockerfiles/kuttl/docker-bake.hcl \
+  --file dockerfiles/kuttl/docker-bake.override.hcl \
   --pull \
   --load \
   --set '*.platform=linux/arm64'

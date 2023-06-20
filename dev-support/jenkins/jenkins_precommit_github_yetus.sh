@@ -18,27 +18,28 @@
 
 # SHELLDOC-IGNORE
 
-set -e
+set -euxo pipefail
 
 # place ourselves in the directory containing the hbase and yetus checkouts
 cd "$(dirname "$0")/../.."
 echo "executing from $(pwd)"
 
-if [[ "true" = "${DEBUG}" ]]; then
-  set -x
-  printenv 2>&1 | sort
-fi
+printenv 2>&1 | sort
 
 declare -i missing_env=0
 declare -a required_envs=(
   # these ENV variables define the required API with Jenkinsfile_GitHub
   "ARCHIVE_PATTERN_LIST"
   "BUILD_URL_ARTIFACTS"
+  "CHANGE_ID"
+  "DOCKER_TAG"
   "GITHUB_TOKEN"
   "PATCHDIR"
+  "PATCHDIR_REL"
   "PLUGINS"
+  "WORKDIR"
   "SOURCEDIR"
-  "YETUSDIR"
+  "SOURCEDIR_REL"
 )
 # Validate params
 for required_env in "${required_envs[@]}"; do
@@ -54,8 +55,21 @@ if [ ${missing_env} -gt 0 ]; then
   exit 1
 fi
 
-# TODO (HBASE-23900): cannot assume test-patch runs directly from sources
-TESTPATCHBIN="${YETUSDIR}/precommit/src/main/shell/test-patch.sh"
+# where the magic happens inside the container runtime
+MOUNT_DIR="/workdir"
+
+declare -a DOCKER_ARGS
+DOCKER_ARGS+=('container' 'run')
+DOCKER_ARGS+=('--entrypoint' '/bin/bash')
+DOCKER_ARGS+=('--mount' "type=bind,source=${WORKDIR},target=${MOUNT_DIR}")
+DOCKER_ARGS+=('--platform' 'linux/amd64')
+DOCKER_ARGS+=('--quiet')
+DOCKER_ARGS+=('--rm')
+DOCKER_ARGS+=('--workdir' "${MOUNT_DIR}")
+DOCKER_ARGS+=('--user' "$(id -u):$(id -g)")
+
+# path to test-patch in the container image
+TESTPATCHBIN="/usr/bin/test-patch"
 
 # this must be clean for every run
 rm -rf "${PATCHDIR}"
@@ -78,40 +92,34 @@ if [[ "true" = "${DEBUG}" ]]; then
   YETUS_ARGS+=("--debug")
 fi
 # If we're doing docker, make sure we don't accidentally pollute the image with a host java path
-if [ -n "${JAVA_HOME}" ]; then
+if [ -n "${JAVA_HOME-}" ]; then
   unset JAVA_HOME
 fi
 YETUS_ARGS+=('--project=hbase-kustomize')
-YETUS_ARGS+=("--patch-dir=${PATCHDIR}")
+YETUS_ARGS+=("--patch-dir=${MOUNT_DIR}/${PATCHDIR_REL}")
 # where the source is located
-YETUS_ARGS+=("--basedir=${SOURCEDIR}")
+YETUS_ARGS+=("--basedir=${MOUNT_DIR}/${SOURCEDIR_REL}")
 # lots of different output formats
-YETUS_ARGS+=("--brief-report-file=${PATCHDIR}/brief.txt")
-YETUS_ARGS+=("--console-report-file=${PATCHDIR}/console.txt")
-YETUS_ARGS+=("--html-report-file=${PATCHDIR}/report.html")
+YETUS_ARGS+=("--brief-report-file=${MOUNT_DIR}/${PATCHDIR_REL}/brief.txt")
+YETUS_ARGS+=("--console-report-file=${MOUNT_DIR}/${PATCHDIR_REL}/console.txt")
+YETUS_ARGS+=("--html-report-file=${MOUNT_DIR}/${PATCHDIR_REL}/report.html")
 # don't complain about issues on source branch
 YETUS_ARGS+=('--continuous-improvement=true')
 # don't worry about unrecognized options
 YETUS_ARGS+=('--ignore-unknown-options=true')
 # auto-kill any surefire stragglers during unit test runs
 YETUS_ARGS+=("--reapermode=kill")
-# set relatively high limits for ASF machines
-# changing these to higher values may cause problems
-# with other jobs on systemd-enabled machines
-YETUS_ARGS+=("--dockermemlimit=20g")
 # -1 spotbugs issues that show up prior to the patch being applied
 YETUS_ARGS+=("--spotbugs-strict-precheck")
 # rsync these files back into the archive dir
 YETUS_ARGS+=("--archive-list=${ARCHIVE_PATTERN_LIST}")
 # URL for user-side presentation in reports and such to our artifacts
 YETUS_ARGS+=("--build-url-artifacts=${BUILD_URL_ARTIFACTS}")
+# include our custom plugins
+YETUS_ARGS+=("--user-plugins=${MOUNT_DIR}/${SOURCEDIR_REL}/dev-support/jenkins/yetus_plugins.d")
 # plugins to enable
 YETUS_ARGS+=("--plugins=${PLUGINS}")
 YETUS_ARGS+=("--tests-filter=test4tests")
-# run in docker mode
-YETUS_ARGS+=("--docker")
-# our jenkins workers don't have buildkit installed (INFRA-24704)
-YETUS_ARGS+=('--docker-buildkit=false')
 # help keep the ASF boxes clean
 YETUS_ARGS+=("--sentinel")
 YETUS_ARGS+=("--github-token=${GITHUB_TOKEN}")
@@ -123,8 +131,9 @@ YETUS_ARGS+=('--github-write-comment')
 # increasing proc limit to avoid OOME: unable to create native threads
 YETUS_ARGS+=("--proclimit=5000")
 
+YETUS_ARGS+=("GH:${CHANGE_ID}")
 
-echo "Launching yetus with command line:"
-echo "${TESTPATCHBIN} ${YETUS_ARGS[*]}"
+echo "Launching yetus via docker with command line:"
+echo "docker ${DOCKER_ARGS[*]} ${DOCKER_TAG} ${TESTPATCHBIN} ${YETUS_ARGS[*]}"
 
-/usr/bin/env bash "${TESTPATCHBIN}" "${YETUS_ARGS[@]}"
+/usr/bin/env docker "${DOCKER_ARGS[@]}" "${DOCKER_TAG}" "${TESTPATCHBIN}" "${YETUS_ARGS[@]}"
