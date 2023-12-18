@@ -26,8 +26,7 @@ echo "executing from $(pwd)"
 
 printenv 2>&1 | sort
 
-declare DEBUG
-
+declare DEBUG="${DEBUG:-false}"
 declare -i missing_env=0
 declare -a required_envs=(
   # these ENV variables define the required API with Jenkinsfile_GitHub
