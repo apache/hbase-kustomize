@@ -20,7 +20,7 @@
 HBCK2_JAR="$(ls -1 "${HBASE_OPERATOR_TOOLS_HOME}"/hbase-hbck2/hbase-hbck2-*.jar)"
 
 # Redefine HBASE_CONF_DIR from /etc/hbase to /etc/hbck2
-# hbck2 depends on log4j1. hbase 2.5.0+ depends on log4j2. If a log4j2.properites in classpath,
+# hbck2 depends on log4j1. hbase 2.5.0+ depends on log4j2. If a log4j2.properties in classpath,
 # the process won't launch.
 export HBASE_CONF_DIR=/etc/hbck2
 
