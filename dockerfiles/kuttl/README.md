@@ -27,6 +27,11 @@ cluster. This image is used as the basis for both dev and test environments.
 Building the docker image locally is a little picky because there's lots of input arguments. These
 are managed via the [docker-bake.override.hcl](./docker-bake.override.hcl).
 
+In order for this image to be usable as a test runner, the `USER` and `UID` in the image must
+match the local system user. This is enabled by default for `USER`. However the `UID` must be read
+from a command and docker bake doesn't support arbitrary shell execution. Instead, explicitly pass
+this value to the build-arg via environment variable.
+
 Start by creating a buildx context that supports (optionally) multi-platform images. If you've
 created this context previously, it's enough to ensure that it's active via `docker buildx ls`.
 
@@ -41,7 +46,7 @@ docker buildx create \
 Finally, build the image using:
 
 ```shell
-docker buildx bake \
+NON_ROOT_USER_ID=$(id -u) docker buildx bake \
   --file dockerfiles/kuttl/docker-bake.hcl \
   --file dockerfiles/kuttl/docker-bake.override.hcl \
   --pull \
@@ -59,13 +64,5 @@ The image is configured with `kuttl` as the entrypoint.
 docker container run --rm -it ${USER}/hbase/kustomize/kuttl:latest --help
 ```
 
-Running tests in the image requires mounting the workspace into the container image and passing
-appropriate parameters to `kuttl`. For example, run the "small" tests like this:
-
-```shell
-docker container run \
-  --mount type=bind,source=$(pwd),target=/workspace \
-  --workdir /workspace \
-  ${USER}/hbase/kustomize/kuttl:latest \
-  --config tests/kuttl-test-small.yaml
-```
+You can use this image to run the unit and integration tests. See
+[tests/README.md](../../tests/README.md) for deatils.
