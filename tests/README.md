@@ -108,8 +108,8 @@ $ docker container run \
 ### Prepare a KinD cluster
 
 Ask KinD to create a cluster (and docker network), and export the configuration oriented as from
-inside the cluster. Start by creating a kind-config.yaml and configuring it for muliple nodes.
-See https://kind.sigs.k8s.io/docs/user/quick-start/#configuring-your-kind-cluster
+inside the cluster. Start by creating a kind-config.yaml and configuring it for multiple nodes.
+See <https://kind.sigs.k8s.io/docs/user/quick-start/#configuring-your-kind-cluster>
 
 ```shell
 $ kind create cluster --config kind-config.yaml
@@ -139,9 +139,9 @@ zookeeper:...
 Pull those images locally.
 
 ```shell
-$ docker image pull hadoop:...
-$ docker image pull hbase:...
-$ docker image pull zookeeper:...
+docker image pull hadoop:...
+docker image pull hbase:...
+docker image pull zookeeper:...
 ```
 
 Now make sure kuttl is using a docker volume for the containerd directory on each container, and
@@ -163,7 +163,8 @@ kindContainers:
 When you run `kuttl` with this config, you'll see that it has mounted a volume for each container.
 It'll take a while, but `kuttl` will report its progress copying these container images.
 
-```
+```sh
+$ kuttl ...
 == RUN   kuttl
 ...
     harness.go:202: node mount point /var/lib/docker/volumes/kind-0/_data

@@ -41,7 +41,7 @@ configMapGenerator:
     disableNameSuffixHash: true
 - name: global-files
   # Add files used by most/all processes into a global configuration configmap
-  # accessible to all processes. The environment-configmap defines env varibles used by
+  # accessible to all processes. The environment-configmap defines env variables used by
   # all processes and pods. This configmap loads files used by each process.
   files:
   - jmxexporter.yaml

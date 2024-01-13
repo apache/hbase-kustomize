@@ -65,4 +65,4 @@ docker container run --rm -it ${USER}/hbase/kustomize/kuttl:latest --help
 ```
 
 You can use this image to run the unit and integration tests. See
-[tests/README.md](../../tests/README.md) for deatils.
+[tests/README.md](../../tests/README.md) for details.

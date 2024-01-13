@@ -16,7 +16,7 @@
 #
 # Common environment variables shared across pods.
 # Include w/ the 'envFrom:' directive.
-# We have to be pendantic in here. We cannot have a value
+# We have to be pedantic in here. We cannot have a value
 # refer to a define made earlier; the interpolation
 # doesn't work.
 ---
@@ -32,12 +32,13 @@ data:
   # See https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#stable-network-id
   # The headless-service is defined in the adjacent rbac.yaml.
   # Matches the serviceName we have on our statefulsets.
-  # Required that we create it according to https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#limitations
+  # Required that we create it according to
+  # https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#limitations
   HADOOP_SERVICE: hadoop
   # dfs.http.policy
   # If HTTPS_ONLY or HTTPS_OR_HTTP then we'll depend on https in UI and jmx'ing
   # and will adjust schema and ports accordingly. If https, we need to get certificates
-  # so cert-manager, etc., needs to be instaled.
+  # so cert-manager, etc., needs to be installed.
   HTTP_POLICY: HTTP_ONLY
   DFS_HTTPS_ENABLE: "false"
   HBASE_SSL_ENABLED: "false"

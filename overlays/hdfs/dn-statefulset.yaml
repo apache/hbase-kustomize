@@ -41,26 +41,27 @@ spec:
       - image: hadoop
         name: datanode
         command:
-          - /bin/bash
-          - -c
-          - |-
-            # Shell context so we can pull in the environment variables set in the container and
-            # via the env and envFrom.
-            # See https://stackoverflow.com/questions/57885828/netty-cannot-access-class-jdk-internal-misc-unsafe
-            HADOOP_LOGFILE="hdfs-${HOSTNAME}.log" \
-            HDFS_DATANODE_OPTS=" \
-              -XX:MaxRAMPercentage=${JVM_HEAP_PERCENTAGE_OF_RESOURCE_LIMIT} \
-              -XX:InitialRAMPercentage=${JVM_HEAP_PERCENTAGE_OF_RESOURCE_LIMIT} \
-              -Djava.security.properties=/tmp/scratch/java.security \
-              -javaagent:${JMX_PROMETHEUS_JAR}=8000:/tmp/scratch/jmxexporter.yaml \
-              -Djava.library.path=${HADOOP_HOME}/lib/native \
-              --add-opens java.base/jdk.internal.misc=ALL-UNNAMED \
-              -Dio.netty.tryReflectionSetAccessible=true \
-              -Xlog:gc:/var/log/hadoop/gc.log:time,uptime:filecount=10,filesize=100M" \
-            hdfs datanode
+        - /bin/bash
+        - -c
+        - |-
+          # Shell context so we can pull in the environment variables set in the container and
+          # via the env and envFrom.
+          # See https://stackoverflow.com/questions/57885828/netty-cannot-access-class-jdk-internal-misc-unsafe
+          HADOOP_LOGFILE="hdfs-${HOSTNAME}.log" \
+          HDFS_DATANODE_OPTS=" \
+            -XX:MaxRAMPercentage=${JVM_HEAP_PERCENTAGE_OF_RESOURCE_LIMIT} \
+            -XX:InitialRAMPercentage=${JVM_HEAP_PERCENTAGE_OF_RESOURCE_LIMIT} \
+            -Djava.security.properties=/tmp/scratch/java.security \
+            -javaagent:${JMX_PROMETHEUS_JAR}=8000:/tmp/scratch/jmxexporter.yaml \
+            -Djava.library.path=${HADOOP_HOME}/lib/native \
+            --add-opens java.base/jdk.internal.misc=ALL-UNNAMED \
+            -Dio.netty.tryReflectionSetAccessible=true \
+            -Xlog:gc:/var/log/hadoop/gc.log:time,uptime:filecount=10,filesize=100M" \
+          hdfs datanode
         # For now, just fetch local /jmx
-        # Says kubelet only exposes failures, not success: https://stackoverflow.com/questions/34455040/kubernetes-liveness-probe-logging
-        # Do better. Check this DN successfully registered w/ NN. TODO.
+        # Doc says kubelet only exposes failures, not success
+        #   https://stackoverflow.com/questions/34455040/kubernetes-liveness-probe-logging
+        # TODO: Do better. Check this DN successfully registered w/ NN.
         livenessProbe:
           httpGet:
             path: /jmx?qry=java.lang:type=OperatingSystem

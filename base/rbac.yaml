@@ -91,7 +91,8 @@ metadata:
 # Matches the ServiceAccount above referenced by statefulsets
 # in their serviceName.
 # See https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#stable-network-id
-# This is required for statefulsets. See https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#limitations
+# This is required for statefulsets.
+# See https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#limitations
 apiVersion: v1
 kind: Service
 metadata:
