@@ -14,8 +14,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-extends: relaxed
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
 
-rules:
-  line-length:
-    max: 100
+commonLabels:
+  # Must repeat common labels and images in each overlay; can't inherit to keep each overlay
+  # independent
+  # https://github.com/kubernetes-sigs/kustomize/issues/915
+  # This label is used to open up calico network acls
+  app: hadoop
+
+resources:
+# When inter-pod networking is limited, apply this policy to open communications between pods that
+# bear the "hadoop" label.
+- networkpolicy.yaml

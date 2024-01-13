@@ -13,9 +13,20 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
----
-extends: relaxed
-
-rules:
-  line-length:
-    max: 100
+#
+# We run the jmxexporter on most all processes to convert jmx metrics to prometheus.
+# This is the config file it uses.
+#
+# Don't lowercase. Leave the metrics in camelcase. Do this because while
+# jmxexport can lowercase metrics names, telegraf can't.
+#
+#lowercaseOutputName: false
+#lowercaseOutputLabelNames: false
+# From https://godatadriven.com/blog/monitoring-hbase-with-prometheus/
+#rules:
+#  - pattern: HadoopNamespace_([^\W_]+)_table_([^\W_]+)_region_([^\W_]+)_metric_(\w+)
+#    name: HBase_metric_$4
+#    labels:
+#      namespace: "$1"
+#      table: "$2"
+#      region: "$3"

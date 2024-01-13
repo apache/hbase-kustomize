@@ -67,7 +67,6 @@ DOCKER_ARGS+=('--platform' 'linux/amd64')
 DOCKER_ARGS+=('--quiet')
 DOCKER_ARGS+=('--rm')
 DOCKER_ARGS+=('--workdir' "${MOUNT_DIR}")
-DOCKER_ARGS+=('--user' "$(id -u):$(id -g)")
 
 # path to test-patch in the container image
 TESTPATCHBIN="/usr/bin/test-patch"
@@ -120,7 +119,7 @@ YETUS_ARGS+=("--build-url-artifacts=${BUILD_URL_ARTIFACTS}")
 YETUS_ARGS+=("--user-plugins=${MOUNT_DIR}/${SOURCEDIR_REL}/dev-support/jenkins/yetus_plugins.d")
 # plugins to enable
 YETUS_ARGS+=("--plugins=${PLUGINS}")
-YETUS_ARGS+=("--tests-filter=test4tests")
+YETUS_ARGS+=("--tests-filter=test4tests,shelldocs")
 # help keep the ASF boxes clean
 YETUS_ARGS+=("--sentinel")
 YETUS_ARGS+=("--github-token=${GITHUB_TOKEN}")

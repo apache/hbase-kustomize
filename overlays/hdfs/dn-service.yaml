@@ -14,8 +14,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-extends: relaxed
-
-rules:
-  line-length:
-    max: 100
+kind: Service
+apiVersion: v1
+metadata:
+  name: datanode
+  labels:
+    jmxexporter: enabled
+spec:
+  selector:
+    role: datanode
+  clusterIP: None
+  ports:
+  - name: jmxexporter
+    port: 8000

@@ -21,6 +21,12 @@
 variable KUBECTL_VERSION { default = "1.24.10" }
 variable KUSTOMIZE_VERSION { default = "4.5.4" }
 variable KUTTL_VERSION { default = "0.15.0" }
+variable ENVTEST_K8S_VERSION { default = "1.23.x" }
+
+variable USER {}
+variable UID {}
+variable NON_ROOT_USER { default = "${USER}" }
+variable NON_ROOT_USER_ID { default = "${UID}" }
 
 variable KUBECTL_SHA_AMD64_URL {}
 variable KUBECTL_SHA_AMD64 {}
@@ -44,7 +50,6 @@ variable KUSTOMIZE_BIN_ARM64_TGZ_URL {}
 variable KUSTOMIZE_BIN_ARM64_TGZ {}
 
 # output variables
-variable USER {}
 variable IMAGE_NAME_REPOSITORY {
   default = ""
 }
@@ -65,6 +70,9 @@ group default {
 target kuttl {
   dockerfile = "dockerfiles/kuttl/Dockerfile"
   args = {
+    ENVTEST_K8S_VERSION = ENVTEST_K8S_VERSION
+    NON_ROOT_USER = NON_ROOT_USER
+    NON_ROOT_USER_ID = NON_ROOT_USER_ID
     KUBECTL_SHA_AMD64_URL = KUBECTL_SHA_AMD64_URL
     KUBECTL_SHA_AMD64 = KUBECTL_SHA_AMD64
     KUBECTL_BIN_AMD64_URL = KUBECTL_BIN_AMD64_URL

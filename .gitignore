@@ -1,0 +1,6 @@
+# test-patch output
+output
+
+# kuttl detritus
+TEST-kuttl-report-unit.xml
+kubeconfig

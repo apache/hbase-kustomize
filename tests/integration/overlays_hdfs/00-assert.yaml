@@ -14,8 +14,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-extends: relaxed
-
-rules:
-  line-length:
-    max: 100
+# assert that there is a `StatefulSet` named "namenode" that has one live instance
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: namenode
+status:
+  availableReplicas: 1
+---
+# assert that there is a `StatefulSet` named "datanode" that has one live instance
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: datanode
+status:
+  availableReplicas: 1

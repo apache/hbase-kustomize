@@ -13,9 +13,25 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
+# Test runner using KUTTL against a target cluster.
+# https://kuttl.dev
+# https://kind.sigs.k8s.io
+#
+# Test runner using KUTTL against a target cluster.
+# https://kuttl.dev
+# https://kind.sigs.k8s.io
 ---
-extends: relaxed
-
-rules:
-  line-length:
-    max: 100
+# Does not use Kuttl's built-in KIND support -- it doesn't quite work correctly with a VM-based
+# (Docker Desktop) style of runtime. Instead, assumes the cluster is established outside of kuttl
+# and configuration is provided via `--env`.
+apiVersion: kuttl.dev/v1beta1
+kind: TestSuite
+testDirs:
+- ./src/test/kustomize/integration
+timeout:
+  # these tests allocate several pods with dependencies between them, allow some time for
+  # everything to launch and settle.
+  300
+reportName: TEST-kuttl-report-integration
+reportFormat: xml

@@ -14,8 +14,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-extends: relaxed
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
 
-rules:
-  line-length:
-    max: 100
+commonLabels:
+  app: hadoop
+
+configMapGenerator:
+- name: hadoop-configuration
+  # Add in single-instance namenode and datanode hdfs-site and core-site.
+  behavior: merge
+  files:
+  - hdfs-site.xml
+  - core-site.xml
+
+resources:
+- nn-statefulset.yaml
+- nn-service.yaml
+- dn-statefulset.yaml
+- dn-service.yaml
+- ../../base

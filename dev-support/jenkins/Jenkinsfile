@@ -65,7 +65,7 @@ pipeline {
                 }
                 dir("${SOURCEDIR}") {
                     sh label: 'build_docker_image.sh kuttl', script: '''#!/bin/bash -e
-                        ./dev-support/jenkins/build_docker_image.sh kuttl --load
+                        NON_ROOT_USER_ID=$(id -u) ./dev-support/jenkins/build_docker_image.sh kuttl --load
                         docker image ls
                     '''
                 }

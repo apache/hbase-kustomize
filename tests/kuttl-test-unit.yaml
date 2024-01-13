@@ -13,9 +13,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
+# Test runner using KUTTL against a target cluster.
+# https://kuttl.dev
+# https://kind.sigs.k8s.io
+# Test runner using https://kuttl.dev
 ---
-extends: relaxed
-
-rules:
-  line-length:
-    max: 100
+apiVersion: kuttl.dev/v1beta1
+kind: TestSuite
+startControlPlane: true
+testDirs:
+- ./tests/unit
+reportName: TEST-kuttl-report-unit
+reportFormat: xml
